@@ -1,5 +1,4 @@
-// Route za prikaz svih knjiga
-
+//Route za prikaz stanja poslužitelja
 const express = require('express')
 const router = express.Router()
 

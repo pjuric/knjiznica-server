@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Autor = require("../models/autor");
+const Knjiga = require("../models/knjiga");
 let user = require("../models/autor");
 
 //Route za sve autore / prikaz svih autora / GET
@@ -13,17 +14,18 @@ router.get("/", async (req, res) => {
   }
 });
 
-//Route za prikaz jednog autora i njegovih naslova / detalji o autoru / GET
+//Route za prikaz jednog autora i njegovih autorskih naslova / detalji o autoru / GET
 router.get("/:id", async (req, res) => {
   try {
     const autor = await Autor.findById(req.params.id);
-    const knjige = await Book.find({ autor: req.params.id }).limit(6).exec()
+    const knjige = await Knjiga.find({ autor: req.params.id }).limit(6).exec()
     res.send({
       autor: autor,
       knjige: knjige
     });
-  } catch (err) {
-    res.send(err);
+  } catch(err) {
+    res.send("Greska");
+    
   }
 });
 
