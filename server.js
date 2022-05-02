@@ -2,10 +2,17 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
 
+let cors = require("cors");
 const express = require('express')
 const app = express()
+app.use(cors());
+const bodyParser = require('body-parser')
 
 const indexRouter = require('./routes/index')
+const autorRouter = require('./routes/autori')
+const knjigaRouter = require('./routes/knjige')
+
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: false }))
 
 const mongoose = require('mongoose')
 mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true})
@@ -14,5 +21,7 @@ db.on('error', error => console.error(error))
 db.once('open', () => console.log('Spojeni ste na Mongoose'))
 
 app.use('/', indexRouter)
+app.use('/autori', autorRouter)
+app.use('/knjige', knjigaRouter)
 
-app.listen(process.env.PORT || 3000)
+app.listen(process.env.PORT || 8081)
