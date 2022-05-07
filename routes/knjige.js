@@ -57,24 +57,54 @@ router.post("/", upload.single("slika"), async (req, res) => {
     console.log(err);
   }
 });
-
+ 
 //Route za uređivanje knjiga (naslova) / ažuriranje postojećeg naslova / PUT
-router.put("/", upload.single("slika"), async (req, res) => {
-  const knjiga = await Knjiga.findById(req.params.id)({
-    naziv: req.body.naziv,
-    opis: req.body.opis,
-    datumObjavljivanja: req.body.datumObjavljivanja,
-    brojStranica: req.body.brojStranica,
-    kolicina: req.body.kolicina,
-    zanr: req.body.zanr,
-    coverImageName: req.body.coverImageName,
-    autor: req.body.autor,
-  });
+router.put("/:id", async (req, res) => {
+  let knjiga;
   try {
+    knjiga = await Knjiga.findById(req.params.id);
+    knjiga.naziv = req.body.naziv,
+    knjiga.opis = req.body.opis,
+    knjiga.datumObjavljivanja = req.body.datumObjavljivanja,
+    knjiga.brojStranica = req.body.brojStranica,
+    knjiga.kolicina = req.body.kolicina,
+    knjiga.zanr = req.body.zanr,
+    knjiga.coverImageName = req.body.coverImageName,
+    knjiga.autor = req.body.autor,
     await knjiga.save();
   } catch (err) {
     console.log(err);
   }
 });
+
+//Route za brisanje knjige (naslova) / brisanje postojećeg naslova / DELETE
+router.delete("/:id", async (req, res) => {
+  let knjiga;
+  try {
+    knjiga = await Knjiga.findById(req.params.id);
+    await knjiga.remove();
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//Route za pretragu knjiga po nazivu
+router.get('/pretraga/:naziv', async (req, res) => {
+  let query = Knjiga.find()
+  if (req.params.naziv != null && req.params.naziv != '') {
+    query = query.regex('naziv', new RegExp(req.params.naziv, 'i'))
+  } else{
+    res.send("Nema dostupnih knjiga")
+  }
+
+  try {
+    const knjige = await query.exec()
+    res.send({
+      knjige: knjige
+    });
+  } catch {
+    console.log(err)
+  }
+})
 
 module.exports = router;
