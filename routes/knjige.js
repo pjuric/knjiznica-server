@@ -77,6 +77,30 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+//Route za uređivanje kolicine knjiga nakon rezervacije / ažuriranje stanja kolicine naslova / PUT
+router.put("/rezervacija/:id", async (req, res) => {
+  let knjiga;
+  try {
+    knjiga = await Knjiga.findById(req.params.id);
+    knjiga.kolicina = knjiga.kolicina - 1,
+    await knjiga.save();
+  } catch (err) {
+    console.log(err);
+  } 
+});
+
+//Route za uređivanje kolicine knjiga nakon vraćanja / ažuriranje stanja kolicine naslova / PUT
+router.put("/vracanje/:id", async (req, res) => {
+  let knjiga;
+  try {
+    knjiga = await Knjiga.findById(req.params.id);
+    knjiga.kolicina = knjiga.kolicina + 1,
+    await knjiga.save();
+  } catch (err) {
+    console.log(err);
+  } 
+});
+
 //Route za brisanje knjige (naslova) / brisanje postojećeg naslova / DELETE
 router.delete("/:id", async (req, res) => {
   let knjiga;

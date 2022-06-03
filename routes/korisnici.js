@@ -73,6 +73,19 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+//Route za uređivanje statusa posudbe (rezervacije) / ažuriranje korisnk.posudba kada korisnik rezervira / PUT
+router.put("/rezervacija/:id", async (req, res) => {
+  let korisnik;
+  try {
+    korisnik = await Korisnik.findById(req.params.id);
+    korisnik.posudba = req.body.posudba; 
+    await korisnik.save();
+    res.send("Success");
+  } catch (err) {
+    res.send(err);
+  }
+});
+
 //Route za brisanje korisnika / brisanje postojećeg korisnika / DELETE
 router.delete("/:id", async (req, res) => {
   let korisnik;
@@ -85,6 +98,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+//Route za sve prijavu korisnika u sustav / POST
 router.post('/login', async (req, res) => {
 	const korisnik = await Korisnik.findOne({
 		korisnickoIme: req.body.korisnickoIme,
@@ -113,11 +127,29 @@ router.post('/login', async (req, res) => {
 			},
 			process.env.DATABASE_URL
 		)
-
 		return res.json({ status: 'ok', korisnik: token })
 	} else {
 		return res.json({ status: 'error', korisnik: false })
 	}
+})
+
+//Route za pretragu korisnika po imenima / GET
+router.get('/pretraga/:ime', async (req, res) => {
+  let query = Korisnik.find()
+  if (req.params.ime != null && req.params.ime != '') {
+    query = query.regex('ime', new RegExp(req.params.ime, 'i'))
+  } else{
+    res.send("Nema dostupnih korisnika")
+  }
+
+  try {
+    const korisnici = await query.exec()
+    res.send({
+      korisnici: korisnici
+    });
+  } catch {
+    console.log(err)
+  }
 })
 
 module.exports = router;
